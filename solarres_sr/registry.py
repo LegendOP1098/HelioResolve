@@ -4,7 +4,18 @@ from dataclasses import dataclass
 
 from torch import nn
 
-from .models import DiffusionSR, EDSR, PatchDiscriminator, RCAN, RLFBESANet, RRDBNet, SRCNN, SRGANGenerator, SwinIRNet
+from .models import (
+    DiffusionSR,
+    EDSR,
+    PatchDiscriminator,
+    RCAN,
+    RESMNet,
+    RLFBESANet,
+    RRDBNet,
+    SRCNN,
+    SRGANGenerator,
+    SwinIRNet,
+)
 
 
 @dataclass(frozen=True)
@@ -18,6 +29,7 @@ class ModelSpec:
 MODEL_SPECS: dict[str, ModelSpec] = {
     "srcnn": ModelSpec("srcnn", "pixel", "grayscale", "Shallow baseline with bicubic pre-upsample."),
     "rlfb_esa": ModelSpec("rlfb_esa", "pixel", "solar_features", "Lightweight feature-distillation model for solar SR."),
+    "resm": ModelSpec("resm", "pixel", "solar_features", "Residual edge-aware solar module network."),
     "edsr": ModelSpec("edsr", "pixel", "grayscale", "Residual SR baseline with stronger capacity than SRCNN."),
     "rcan": ModelSpec("rcan", "pixel", "grayscale", "Channel-attention SR model with stronger detail recovery."),
     "swinir": ModelSpec("swinir", "pixel", "grayscale", "Transformer-based SR model with shifted window attention."),
@@ -37,6 +49,11 @@ CAPACITY_PRESETS: dict[str, dict[str, dict[str, int | float | tuple[int, int]]]]
         "tiny": {"num_features": 48, "num_rlfb": 6},
         "base": {"num_features": 64, "num_rlfb": 12},
         "large": {"num_features": 80, "num_rlfb": 16},
+    },
+    "resm": {
+        "tiny": {"num_features": 48, "num_blocks": 6, "expansion": 2, "reduction": 12, "res_scale": 0.2},
+        "base": {"num_features": 64, "num_blocks": 10, "expansion": 2, "reduction": 16, "res_scale": 0.2},
+        "large": {"num_features": 96, "num_blocks": 14, "expansion": 2, "reduction": 16, "res_scale": 0.2},
     },
     "edsr": {
         "tiny": {"num_features": 48, "num_blocks": 8, "res_scale": 0.1},
@@ -77,8 +94,8 @@ def list_available_models() -> list[str]:
 
 def candidate_order(diffusion_centric: bool = True) -> list[str]:
     if diffusion_centric:
-        return ["diffusion_sr", "swinir", "rcan", "edsr", "rlfb_esa", "esrgan", "srgan", "srcnn"]
-    return ["swinir", "rcan", "edsr", "diffusion_sr", "rlfb_esa", "esrgan", "srgan", "srcnn"]
+        return ["diffusion_sr", "swinir", "resm", "rcan", "edsr", "rlfb_esa", "esrgan", "srgan", "srcnn"]
+    return ["swinir", "resm", "rcan", "edsr", "diffusion_sr", "rlfb_esa", "esrgan", "srgan", "srcnn"]
 
 
 def final_fit_order(model_names: list[str]) -> list[str]:
@@ -90,7 +107,7 @@ def suggest_capacity(model_name: str, train_size: int) -> str:
     if model_name not in MODEL_SPECS:
         raise KeyError(f"Unknown model: {model_name}")
 
-    if model_name in {"diffusion_sr", "rcan", "swinir"}:
+    if model_name in {"diffusion_sr", "rcan", "resm", "swinir"}:
         if train_size < 2500:
             return "tiny"
         if train_size < 10000:
@@ -133,6 +150,8 @@ def build_model(
         return EDSR(in_channels=in_channels, out_channels=out_channels, **kwargs)
     if model_name == "rcan":
         return RCAN(in_channels=in_channels, out_channels=out_channels, **kwargs)
+    if model_name == "resm":
+        return RESMNet(in_channels=in_channels, out_channels=out_channels, **kwargs)
     if model_name == "swinir":
         return SwinIRNet(in_channels=in_channels, out_channels=out_channels, **kwargs)
     if model_name == "srgan":

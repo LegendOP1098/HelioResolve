@@ -2,6 +2,7 @@ from .diffusion_sr import DiffusionSR
 from .edsr import EDSR
 from .esrgan import RRDBNet
 from .rcan import RCAN
+from .resm import RESMBlock, RESMNet
 from .rlfb_esa import RLFBESANet
 from .srcnn import SRCNN
 from .srgan import PatchDiscriminator, SRGANGenerator
@@ -12,6 +13,8 @@ __all__ = [
     "EDSR",
     "PatchDiscriminator",
     "RCAN",
+    "RESMBlock",
+    "RESMNet",
     "RLFBESANet",
     "RRDBNet",
     "SRCNN",

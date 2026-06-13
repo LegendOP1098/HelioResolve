@@ -11,7 +11,7 @@ The public repository is source-first by design: private datasets, notebooks, ch
 - **Problem:** Improve low-resolution solar imagery while preserving high-frequency structure.
 - **Approach:** Compare CNN, attention, transformer, GAN, and diffusion super-resolution families under one dataset and evaluation pipeline.
 - **Engineering:** Modular package, CLI workflows, CI, tests, artifact hygiene, GPU diagnostics, and reusable training abstractions.
-- **Models:** SRCNN, RLFB+ESA, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional Diffusion SR.
+- **Models:** SRCNN, RLFB+ESA, RESM, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional Diffusion SR.
 - **Read first:** [docs/INTERVIEWER_BRIEF.md](docs/INTERVIEWER_BRIEF.md), [SR_PIPELINE.md](SR_PIPELINE.md), and [solarres_sr/training.py](solarres_sr/training.py).
 
 ## Highlights
@@ -29,7 +29,7 @@ flowchart LR
     A["Solar LR/HR image pairs"] --> B["Dataset resolver and pairing checks"]
     B --> C["Preprocessing: grayscale, RGB, or solar features"]
     C --> D["Model registry"]
-    D --> E["CNN / Attention / SwinIR / GAN / Diffusion SR"]
+    D --> E["CNN / RESM / Attention / SwinIR / GAN / Diffusion SR"]
     E --> F["Training loop: AMP, EMA, schedulers, checkpoints"]
     F --> G["Metrics: PSNR, SSIM, RMSE, correlation"]
     G --> H["Benchmark leaderboard and best-fit selection"]
@@ -57,7 +57,7 @@ helio-train --model diffusion_sr --epochs 50 --batch-size 4
 Benchmark strong candidates:
 
 ```bash
-helio-benchmark --models diffusion_sr rcan edsr --epochs 40 --batch-size 4
+helio-benchmark --models resm diffusion_sr rcan edsr --epochs 40 --batch-size 4
 ```
 
 Run a deliberate CPU smoke test:
@@ -113,6 +113,7 @@ train_psnr_max.py         Long-running PSNR-focused training workflow
 - `solarres_sr/registry.py`: model catalog, capacity presets, and build dispatch.
 - `solarres_sr/training.py`: shared training loop, validation, checkpointing, metrics, and benchmark orchestration.
 - `solarres_sr/data.py`: dataset discovery, LR/HR filename pairing, leakage checks, and solar preprocessing.
+- `solarres_sr/models/resm.py`: custom Residual Edge-aware Solar Module architecture.
 - `solarres_sr/models/swinir.py`: transformer-based SwinIR implementation inside the package.
 - `swinir_model.py`: standalone/reference SwinIR code retained for review and comparison.
 

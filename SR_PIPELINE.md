@@ -1,10 +1,11 @@
 # SolarRes SR Suite
 
-This repo now includes a reusable training package in `solarres_sr/` so you can compare `SRCNN`, `RLFB+ESA`, `EDSR`, `RCAN`, `SRGAN`, `ESRGAN`, and `Diffusion SR` on the same dataset pipeline.
+This repo now includes a reusable training package in `solarres_sr/` so you can compare `SRCNN`, `RLFB+ESA`, `RESM`, `EDSR`, `RCAN`, `SRGAN`, `ESRGAN`, and `Diffusion SR` on the same dataset pipeline.
 
 ## Why this helps
 
 - `Diffusion SR` is the default recommendation path for solar-detail recovery.
+- `RESM` is a custom residual edge-aware solar module network for high-frequency solar structure.
 - `EDSR` and `RCAN` are added as strong non-GAN baselines.
 - Capacity is chosen automatically from dataset size when `--capacity auto` is used.
 - Validation-based checkpointing, LR scheduling, gradient clipping, augmentation, and early stopping reduce overfitting and underfitting mistakes.
@@ -14,6 +15,7 @@ This repo now includes a reusable training package in `solarres_sr/` so you can 
 
 ```bash
 python train_sr.py --model diffusion_sr --epochs 50 --batch-size 4
+python train_sr.py --model resm --epochs 50 --batch-size 4
 python train_sr.py --model rcan --epochs 50 --batch-size 4
 python train_sr.py --model edsr --epochs 50 --batch-size 4
 ```
@@ -21,7 +23,7 @@ python train_sr.py --model edsr --epochs 50 --batch-size 4
 ## Benchmark the main candidates
 
 ```bash
-python benchmark_sr_models.py --models diffusion_sr rcan edsr --epochs 40 --batch-size 4
+python benchmark_sr_models.py --models resm diffusion_sr rcan edsr --epochs 40 --batch-size 4
 ```
 
 ## Useful options
