@@ -26,15 +26,15 @@ env/
 *.pfx
 
 # Datasets and private research assets
-Solar Dataset/
-Notebooks/
-Models/
-data/
-dataset/
-datasets/
-raw/
-processed/
-external/
+/Solar Dataset/
+/Notebooks/
+/Models/
+/data/
+/dataset/
+/datasets/
+/raw/
+/processed/
+/external/
 *.h5
 *.hdf5
 *.npy
@@ -49,13 +49,13 @@ external/
 *.7z
 
 # Training outputs, checkpoints, and model weights
-checkpoints/
-runs/
-outputs/
-results/
-logs/
-wandb/
-mlruns/
+/checkpoints/
+/runs/
+/outputs/
+/results/
+/logs/
+/wandb/
+/mlruns/
 *.pt
 *.pth
 *.ckpt

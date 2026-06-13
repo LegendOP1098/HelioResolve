@@ -30,3 +30,14 @@ dataset-root/
 LR and HR filenames must share the same stem. The loader refuses to pair images by sorted order when names do not match, because that can silently corrupt supervision.
 
 Common image extensions are supported: `.png`, `.jpg`, `.jpeg`, `.tif`, `.tiff`, and `.bmp`.
+
+Recommended local-only layout:
+
+```text
+SolaRes/
+  Solar Dataset/      # ignored
+  checkpoints/        # ignored
+  outputs/            # ignored
+```
+
+For public releases, keep data and trained artifacts outside the Git tree or in a private artifact store.

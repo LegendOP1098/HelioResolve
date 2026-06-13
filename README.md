@@ -1,44 +1,59 @@
-# SolarRes SR
+# HelioResolve
 
-SolarRes SR is a PyTorch training suite for solar image super-resolution. It includes a reusable package, CLI scripts, and model registry for comparing SRCNN, RLFB+ESA, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional diffusion SR on the same low-resolution/high-resolution solar dataset layout.
+[![CI](https://github.com/LegendOP1098/SolaRes-public/actions/workflows/ci.yml/badge.svg)](https://github.com/LegendOP1098/SolaRes-public/actions/workflows/ci.yml)
 
-## What Is Included
+**HelioResolve** is a production-ready PyTorch suite for solar image super-resolution. It provides a reusable training package, installable command-line tools, and a common benchmark harness for SRCNN, RLFB+ESA, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional diffusion SR.
 
-- Reusable package under `solarres_sr/`
-- Training CLI: `train_sr.py`
-- Benchmark CLI: `benchmark_sr_models.py`
-- Fine-tuning/search CLI: `finetune_sr_models.py`
-- PSNR-focused training workflow: `train_psnr_max.py`
-- Lightweight tests and CI configuration
-- Public-safe ignore rules for datasets, notebooks, checkpoints, weights, logs, and secrets
+The public repository is source-first by design: private datasets, notebooks, checkpoints, trained weights, logs, and local experiment outputs are excluded.
 
-## Repository Layout
+## Highlights
 
-```text
-solarres_sr/              Core package: data, losses, metrics, registry, training, models
-tests/                    Fast smoke tests that do not require private data
-docs/                     Data layout, repo hygiene, and operational notes
-train_sr.py               Train a single model
-benchmark_sr_models.py    Compare candidate models
-finetune_sr_models.py     Quick search plus optional final training
-train_psnr_max.py         Long-running PSNR-optimized training workflow
-```
+- Unified LR/HR solar dataset pipeline with filename-safe pairing.
+- Registry-driven model selection across CNN, attention, GAN, transformer, and diffusion families.
+- Validation checkpointing, EMA evaluation, learning-rate scheduling, gradient clipping, and early stopping.
+- Benchmark and fine-tuning workflows that rank models by PSNR, SSIM, bicubic gap, or a composite score.
+- Public-safe repo hygiene with CI checks and lightweight smoke tests.
 
-Local research assets are intentionally ignored by Git: `Solar Dataset/`, `Notebooks/`, `Models/`, `checkpoints/`, `outputs/`, `runs/`, and model weight files such as `.pt` and `.pth`.
-
-## Setup
+## Install
 
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-python -m pip install -r requirements-dev.txt
+python -m pip install -e ".[dev]"
 ```
 
 On Linux/macOS, replace the activation command with `source .venv/bin/activate`.
 
-## Dataset Layout
+## Quick Start
+
+Train a single model:
+
+```bash
+helio-train --model diffusion_sr --epochs 50 --batch-size 4
+```
+
+Benchmark strong candidates:
+
+```bash
+helio-benchmark --models diffusion_sr rcan edsr --epochs 40 --batch-size 4
+```
+
+Run a deliberate CPU smoke test:
+
+```bash
+helio-train --model srcnn --epochs 1 --batch-size 1 --allow-cpu-fallback --max-train-batches 2 --max-val-batches 2
+```
+
+The original script entry points are also available:
+
+```bash
+python train_sr.py --model diffusion_sr --epochs 50 --batch-size 4
+python benchmark_sr_models.py --models diffusion_sr rcan edsr --epochs 40 --batch-size 4
+python finetune_sr_models.py --quick-only --quick-epochs 8
+```
+
+## Dataset
 
 Keep the dataset outside Git. The default resolver looks for this structure under the project root:
 
@@ -55,27 +70,32 @@ Solar Dataset/
 
 The split names `train`/`val` and `training`/`validation` are both supported. You can pass either the project root or the actual dataset root to `--dataset-root`.
 
-## Train
+More details: [docs/DATA.md](docs/DATA.md).
 
-```bash
-python train_sr.py --model diffusion_sr --epochs 50 --batch-size 4
-python train_sr.py --model rcan --epochs 50 --batch-size 4
-python train_sr.py --model edsr --epochs 50 --batch-size 4
+## Repository Layout
+
+```text
+solarres_sr/              Core Python package
+solarres_sr/models/       Model implementations and shared blocks
+tests/                    Fast public-safe smoke tests
+docs/                     Dataset, operations, and hygiene notes
+train_sr.py               Single-model training CLI
+benchmark_sr_models.py    Multi-model benchmark CLI
+finetune_sr_models.py     Search and fine-tuning CLI
+train_psnr_max.py         Long-running PSNR-focused training workflow
 ```
 
-Use `--allow-cpu-fallback` for local smoke runs on machines without CUDA:
+## Commands
 
 ```bash
-python train_sr.py --model srcnn --epochs 1 --batch-size 1 --allow-cpu-fallback --max-train-batches 2 --max-val-batches 2
+helio-train --help
+helio-benchmark --help
+helio-finetune --help
+helio-psnr-max --help
+helio-diagnose-gpu
 ```
 
-## Benchmark
-
-```bash
-python benchmark_sr_models.py --models diffusion_sr rcan edsr --epochs 40 --batch-size 4
-```
-
-## Outputs
+## Artifacts
 
 Training writes run artifacts under `checkpoints/` by default, or under `--save-root` when provided. These artifacts are intentionally ignored by Git:
 
@@ -84,6 +104,13 @@ Training writes run artifacts under `checkpoints/` by default, or under `--save-
 - `summary.json`
 - `best_model.pt`
 
-## Privacy
+## Development
+
+```bash
+python -m pytest
+python -m py_compile train_sr.py benchmark_sr_models.py finetune_sr_models.py train_psnr_max.py diagnose_gpu.py
+```
+
+## Privacy And Publishing
 
 Do not commit private datasets, notebooks with rendered outputs, trained weights, checkpoints, logs, `.env` files, API keys, or cloud credentials. See `docs/REPOSITORY_HYGIENE.md` for the repo hygiene checklist.

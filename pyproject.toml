@@ -3,11 +3,21 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "solarres-sr"
+name = "helioresolve"
 version = "0.1.0"
-description = "Solar image super-resolution training and benchmarking suite."
+description = "Production-ready solar image super-resolution training and benchmarking suite."
 readme = "README.md"
 requires-python = ">=3.10"
+authors = [{ name = "LegendOP1098" }]
+keywords = ["solar", "super-resolution", "pytorch", "computer-vision", "deep-learning"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
 dependencies = [
     "torch==2.7.1",
     "torchvision==0.22.1",
@@ -28,11 +38,33 @@ dev = [
     "ruff>=0.5.0",
 ]
 
+[project.urls]
+Homepage = "https://github.com/LegendOP1098/SolaRes-public"
+Repository = "https://github.com/LegendOP1098/SolaRes-public"
+Issues = "https://github.com/LegendOP1098/SolaRes-public/issues"
+
+[project.scripts]
+helio-train = "train_sr:main"
+helio-benchmark = "benchmark_sr_models:main"
+helio-finetune = "finetune_sr_models:main"
+helio-psnr-max = "train_psnr_max:main"
+helio-diagnose-gpu = "diagnose_gpu:main"
+
+[tool.setuptools]
+py-modules = [
+    "benchmark_sr_models",
+    "diagnose_gpu",
+    "finetune_sr_models",
+    "train_psnr_max",
+    "train_sr",
+]
+
 [tool.setuptools.packages.find]
 include = ["solarres_sr*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-q"
 
 [tool.ruff]
 line-length = 120
