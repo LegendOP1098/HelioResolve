@@ -39,9 +39,9 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/LegendOP1098/SolaRes-public"
-Repository = "https://github.com/LegendOP1098/SolaRes-public"
-Issues = "https://github.com/LegendOP1098/SolaRes-public/issues"
+Homepage = "https://github.com/LegendOP1098/HelioResolve"
+Repository = "https://github.com/LegendOP1098/HelioResolve"
+Issues = "https://github.com/LegendOP1098/HelioResolve/issues"
 
 [project.scripts]
 helio-train = "train_sr:main"

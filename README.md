@@ -1,10 +1,18 @@
 # HelioResolve
 
-[![CI](https://github.com/LegendOP1098/SolaRes-public/actions/workflows/ci.yml/badge.svg)](https://github.com/LegendOP1098/SolaRes-public/actions/workflows/ci.yml)
+[![CI](https://github.com/LegendOP1098/HelioResolve/actions/workflows/ci.yml/badge.svg)](https://github.com/LegendOP1098/HelioResolve/actions/workflows/ci.yml)
 
-**HelioResolve** is a production-ready PyTorch suite for solar image super-resolution. It provides a reusable training package, installable command-line tools, and a common benchmark harness for SRCNN, RLFB+ESA, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional diffusion SR.
+**HelioResolve** is a solar magnetogram super-resolution project built to recover fine solar structure from low-resolution observations. It is packaged as a reusable PyTorch training suite with installable command-line tools, a model registry, reproducible benchmark workflows, and public-safe repository hygiene.
 
 The public repository is source-first by design: private datasets, notebooks, checkpoints, trained weights, logs, and local experiment outputs are excluded.
+
+## Recruiter Snapshot
+
+- **Problem:** Improve low-resolution solar imagery while preserving high-frequency structure.
+- **Approach:** Compare CNN, attention, transformer, GAN, and diffusion super-resolution families under one dataset and evaluation pipeline.
+- **Engineering:** Modular package, CLI workflows, CI, tests, artifact hygiene, GPU diagnostics, and reusable training abstractions.
+- **Models:** SRCNN, RLFB+ESA, EDSR, RCAN, SwinIR, SRGAN, ESRGAN, and conditional Diffusion SR.
+- **Read first:** [docs/INTERVIEWER_BRIEF.md](docs/INTERVIEWER_BRIEF.md), [SR_PIPELINE.md](SR_PIPELINE.md), and [solarres_sr/training.py](solarres_sr/training.py).
 
 ## Highlights
 
@@ -13,6 +21,19 @@ The public repository is source-first by design: private datasets, notebooks, ch
 - Validation checkpointing, EMA evaluation, learning-rate scheduling, gradient clipping, and early stopping.
 - Benchmark and fine-tuning workflows that rank models by PSNR, SSIM, bicubic gap, or a composite score.
 - Public-safe repo hygiene with CI checks and lightweight smoke tests.
+
+## System Design
+
+```mermaid
+flowchart LR
+    A["Solar LR/HR image pairs"] --> B["Dataset resolver and pairing checks"]
+    B --> C["Preprocessing: grayscale, RGB, or solar features"]
+    C --> D["Model registry"]
+    D --> E["CNN / Attention / SwinIR / GAN / Diffusion SR"]
+    E --> F["Training loop: AMP, EMA, schedulers, checkpoints"]
+    F --> G["Metrics: PSNR, SSIM, RMSE, correlation"]
+    G --> H["Benchmark leaderboard and best-fit selection"]
+```
 
 ## Install
 
@@ -79,11 +100,21 @@ solarres_sr/              Core Python package
 solarres_sr/models/       Model implementations and shared blocks
 tests/                    Fast public-safe smoke tests
 docs/                     Dataset, operations, and hygiene notes
+SR_PIPELINE.md            Short model-comparison workflow summary
+swinir_model.py           Standalone/reference SwinIR implementation
 train_sr.py               Single-model training CLI
 benchmark_sr_models.py    Multi-model benchmark CLI
 finetune_sr_models.py     Search and fine-tuning CLI
 train_psnr_max.py         Long-running PSNR-focused training workflow
 ```
+
+## What To Review In An Interview
+
+- `solarres_sr/registry.py`: model catalog, capacity presets, and build dispatch.
+- `solarres_sr/training.py`: shared training loop, validation, checkpointing, metrics, and benchmark orchestration.
+- `solarres_sr/data.py`: dataset discovery, LR/HR filename pairing, leakage checks, and solar preprocessing.
+- `solarres_sr/models/swinir.py`: transformer-based SwinIR implementation inside the package.
+- `swinir_model.py`: standalone/reference SwinIR code retained for review and comparison.
 
 ## Commands
 
